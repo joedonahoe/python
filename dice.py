@@ -6,22 +6,54 @@
 
 import random ## needed for random numbers  
 
-def ConductExperiment ( number_of_rolls, number_of_dice, dice_sides ): 
-    total_result = 0 
+def ConductExperiment ( number_of_rolls, number_of_dice, dice_sides, adder ): 
+
+    results = [] 
+
+    ## roll dice
+    minResult = number_of_dice * dice_sides + adder ## initialize to maximum possible value.  
+    maxResult = 0  ## not expecting adder to be negative and less than number_of_dice * dice_sides
+    totalResult = 0
     for i in range( number_of_rolls ): 
-        total_result = total_result + RollDice ( number_of_dice, dice_sides )
-    return( total_result / number_of_rolls)
+        result = 0
+        for j in range( number_of_dice ): 
+            result = result + random.randint(1,dice_sides) + adder
+        if result < minResult: 
+            minResult = result
+        if result > maxResult: 
+            maxResult = result
+        totalResult = totalResult + result
+        results.append ( result ) 
+    averageResult = totalResult / number_of_rolls
 
-def RollDice ( number_of_dice, dice_sides ): 
-    total_result = 0 
-    for i in range( number_of_dice ): 
-        total_result = total_result + random.randint(1,dice_sides)
-    return( total_result )
+    ## describe the experiment.  
+    if adder == 0: 
+        adderText = ""
+    elif adder > 0: 
+        adderText = "+"+str(adder) 
+    else: 
+        adderText = str(adder) ## expecting the minus sign to be reported
+    print('We rolled a ' + str(number_of_dice) + 'd' + str(dice_sides) + adderText + ', ' + str(number_of_rolls) + " times.") 
 
-r = 100
-d = 3 
-s = 6 
-print('Rolled a ' + str(d) + 'v' + str(s) + ', ' + str(r) + ' times, and we averaged ' + str(ConductExperiment ( 100, 3, 6 )) + '.' ) 
+    ## print stats about the experiement.  
+    print("MIN = " + str( minResult ) )
+    print("MAX = " + str( maxResult ) )
+    print("AVG = " + str( averageResult ) )
+
+    ## print a histogram.  
+    currentResult = minResult 
+    while currentResult <= maxResult: 
+        if currentResult < 10: 
+            print( " ", end='' )
+        print( str(currentResult) + ' :: ', end='' )
+        for i in results: 
+            if i == currentResult: 
+                print( "x", end="" )
+        print( "" ) ## for newline
+        currentResult = currentResult + 1 
+
+ConductExperiment ( 500, 3, 6, 0 ) 
+
 
 
         
